@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -8,7 +8,9 @@ from Authentication_Api.models import UserRegistration
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAuthenticated
+from rest_framework.decorators import action
+
 # Create your views here.
 
 
@@ -26,6 +28,9 @@ class Registration(ViewSet):
         return Response({'message': 'User creation failed',
                          'errors': serializer.errors,
                          'status': 400}, status=status.HTTP_400_BAD_REQUEST)
+    def get_permissions(self):
+        permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
 
 
 class Login(ViewSet):
@@ -53,3 +58,31 @@ class Login(ViewSet):
             'name': user.name,
             'email': user.email,
         }, status=status.HTTP_200_OK)
+        
+    def get_permissions(self):
+        permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+        
+@action(detail=False,methods=['get'],url_path='profile')        
+class Profile(ViewSet):
+    def retrieve(self, request, pk=None):
+        user = request.user  
+        if not user.is_authenticated:
+            return Response({
+                'message': 'Authentication credentials were not provided or invalid.',
+                'status': 401
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
+        serializer = UserSerializer(user)
+        return Response({
+            'message': 'Successful',
+            'data': serializer.data,
+            'status': 200
+        }, status=status.HTTP_200_OK)
+        
+        
+    # def get_permissions(self):
+    #     permission_classes = [IsAuthenticated]
+    #     return [permission() for permission in permission_classes]
+        
+    

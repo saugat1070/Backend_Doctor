@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
-
+from django.utils import timezone
 # Create your models here.
 
 class UserRegistrationManager(BaseUserManager):
@@ -43,6 +43,17 @@ class UserRegistration(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    choose = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other'),
+    ]
+    profile_picture = models.ImageField(upload_to='photo/',null=True)
+    gender = models.CharField(choices=choose,default='male',null=True)
+    phone_number = models.BigIntegerField(null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    date_of_birth = models.DateField(null=True)
+    
     
     objects = UserRegistrationManager()
     
@@ -58,4 +69,3 @@ class UserRegistration(AbstractBaseUser):
     def has_module_perms(self,app_label):
         return self.is_superuser
     
-        

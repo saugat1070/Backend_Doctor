@@ -67,12 +67,13 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': [
    'rest_framework.permissions.AllowAny',
+   'rest_framework.permissions.IsAuthenticated'
 ],
 }
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Ensure this is included
-    'Authentication_Api.email_backend.EmailBackend'
+    # 'Authentication_Api.email_backend.EmailBackend' //it doesn't require
 ]
 
 
