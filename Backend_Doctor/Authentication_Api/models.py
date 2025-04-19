@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.utils import timezone
+import uuid
 # Create your models here.
 
 class UserRegistrationManager(BaseUserManager):
@@ -37,6 +38,7 @@ class UserRegistrationManager(BaseUserManager):
         return user
     
 class UserRegistration(AbstractBaseUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(max_length=225,unique=True)
     name = models.CharField(max_length=20)
     is_staff = models.BooleanField(default=False)

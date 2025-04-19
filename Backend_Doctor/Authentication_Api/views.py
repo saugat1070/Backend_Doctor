@@ -66,7 +66,9 @@ class Login(ViewSet):
 @action(detail=False,methods=['get'],url_path='profile')        
 class Profile(ViewSet):
     def retrieve(self, request, pk=None):
+        print("i am here")
         user = request.user  
+        print(user)
         if not user.is_authenticated:
             return Response({
                 'message': 'Authentication credentials were not provided or invalid.',
@@ -81,8 +83,8 @@ class Profile(ViewSet):
         }, status=status.HTTP_200_OK)
         
         
-    # def get_permissions(self):
-    #     permission_classes = [IsAuthenticated]
-    #     return [permission() for permission in permission_classes]
+    def get_permissions(self):
+        permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
         
     
