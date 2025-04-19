@@ -86,5 +86,32 @@ class Profile(ViewSet):
     def get_permissions(self):
         permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
+    
+@action(detail=False,methods=['put'],url_path='profile_update')
+class Profile_update(ViewSet):
+    
+    def update(self,request,pk=None):
+        user = request.user
+        serializer = UserSerializer(user, data=request.data,partial=True)
+        if not user.is_authenticated:
+            return Response({
+                "message":"Unauthorized user",
+            })
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'message':"update succes",
+                'status':202,
+                'data':serializer.data
+            },status=status.HTTP_202_ACCEPTED)
+        return Response({
+            'message':"Bad request",
+            'status':400
+        },status=status.HTTP_400_BAD_REQUEST)
+        
+    
+    def get_permission(self):
+        permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
         
     
