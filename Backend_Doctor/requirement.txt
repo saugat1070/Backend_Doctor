@@ -1,4 +1,0 @@
-djangorestframework
-pillow
-djangorestframework-simplejwt
-markdown
