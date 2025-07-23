@@ -28,4 +28,6 @@ class Profile(serializers.ModelSerializer):
         model = User
         fields = ["id",'email', 'first_name', 'last_name', 'photo_name', 'username', 'date_of_birth']
         read_only = ["id","email","username"]
+        
+        
     

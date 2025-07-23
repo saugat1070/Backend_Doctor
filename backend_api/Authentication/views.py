@@ -1,13 +1,16 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from Authentication.serializer import SignUp as SignUpSerializer, Profile
 from Authentication.models import User
 from rest_framework.views import APIView
 from rest_framework import status
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponseRedirect
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken,AccessToken
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from Authentication.serializer import Profile as ProfileSerializer
+import os
+from dotenv import load_dotenv
+import requests
 # Create your views here.
 
 class SignUp(APIView):
@@ -93,3 +96,62 @@ class profile_fetch(APIView):
             "message":"please login first"
         })
 
+
+class GoogleAuthentication(APIView):
+    permission_classes = [AllowAny]
+    def __init__(self):
+        self.google_client_secret_key = os.getenv("GoogleClientSecretKey")
+        self.google_client_id = os.getenv("GoogleClientId")
+        self.redirect_url = os.getenv("RedirectUrl")
+        print(self.google_client_id,self.google_client_secret_key,self.redirect_url)
+    def get(self,request):
+        auth_url = f'https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={self.google_client_id}&redirect_uri={self.redirect_url}&scope=profile%20email'
+        return redirect(auth_url)
+    
+    
+class GoogleCallback(APIView):
+    permission_classes = [AllowAny]
+
+    def __init__(self):
+        self.google_client_secret_key = os.getenv("GoogleClientSecretKey")
+        self.google_client_id = os.getenv("GoogleClientId")
+        self.redirect_url = os.getenv("RedirectUrl")
+        print(self.google_client_id, self.google_client_secret_key, self.redirect_url)
+        
+    def get(self,request):
+        code = request.GET.get("code")
+        try:
+            tokenResponse = requests.post(
+                f'https://oauth2.googleapis.com/token',
+                json={
+                    "code":code,
+                    "client_id": self.google_client_id,
+                    "client_secret": self.google_client_secret_key,
+                    "redirect_uri": self.redirect_url,
+                    "grant_type": 'authorization_code'
+                }
+            )
+            print(tokenResponse)
+            token_data = tokenResponse.json()
+            accessToken = token_data.get("access_token")
+            
+            userRes = requests.get(
+                f'https://www.googleapis.com/oauth2/v2/userinfo',
+                headers={
+                    "Authorization": f'Bearer {accessToken}'
+                }
+            )
+            
+            return JsonResponse({
+                "data": userRes.json()
+            })
+        except Exception as e:
+            return JsonResponse({
+                "message": "An error occurred during Google callback",
+                "error": str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+    
+        
+        
