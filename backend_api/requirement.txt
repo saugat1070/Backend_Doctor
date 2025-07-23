@@ -1,0 +1,7 @@
+django
+djangorestframework
+djangorestframework_simplejwt
+pillow
+requests
+psycopg2
+sqlparse
