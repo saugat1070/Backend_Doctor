@@ -1,8 +1,15 @@
 from django.db import models
-from django.contrib.auth.models import BaseUserManager,AbstractBaseUser
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 import random
+import uuid
 
 # Create your models here.
+
+Role = (
+    ("admin","Admin"),
+    ("doctor","Doctor"),
+    ("patient","Patient")
+)
 
 class UserManager(BaseUserManager):
     def create_user(self, email, first_name, last_name, password=None, **extra_fields):
@@ -29,21 +36,22 @@ class UserManager(BaseUserManager):
         return self.create_user(email, first_name=first_name, last_name=last_name, password=password, **extra_fields)
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
+    id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     email = models.EmailField(unique=True, null=False)
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     photo_name = models.ImageField(upload_to='photos/', height_field=None, width_field=None, null=True, blank=True)
     username = models.CharField(max_length=8, unique=True, blank=True) 
-    date_of_birth = models.DateField(null=True)
-    is_doctor = models.BooleanField(default = False)
+    date_of_birth = models.DateField(null=True, blank=True)
+    role = models.CharField(default="patient",choices=Role)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False) 
     objects = UserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["first_name", "last_name", "date_of_birth", "college_name"]  
+    REQUIRED_FIELDS = ["first_name", "last_name"]  
 
     def __str__(self):
         return self.username
@@ -54,12 +62,5 @@ class User(AbstractBaseUser):
         super().save(*args, **kwargs)
 
     def get_username(self):
-        
         username = f'{self.first_name[:4]}{random.randint(1,9)}'.lower()
-        return username
-
-    def has_perm(self, perm, obj=None):
-        return self.is_superuser  # Superusers have all permissions
-
-    def has_module_perms(self, app_label):
-        return self.is_superuser  # Superusers have access to all modules    
+        return username    

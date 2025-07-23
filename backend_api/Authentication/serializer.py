@@ -7,7 +7,7 @@ class SignUp(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'password', 'confirm_password', 'is_doctor']
+        fields = ['email', 'first_name', 'last_name', 'password', 'confirm_password']
         extra_kwargs = {
             'password': {'write_only': True},
             'email': {'required': True},
@@ -26,6 +26,6 @@ class SignUp(serializers.ModelSerializer):
 class Profile(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'photo_name', 'username', 'date_of_birth', 'is_doctor']
-        read_only_fields = ['email', 'username']
+        fields = ["id",'email', 'first_name', 'last_name', 'photo_name', 'username', 'date_of_birth']
+        read_only = ["id","email","username"]
     
