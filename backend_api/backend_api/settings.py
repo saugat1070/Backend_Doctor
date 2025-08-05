@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'Authentication',
     'rest_framework',
     'rest_framework_simplejwt',
+    'doctor_portion'
     
 ]
 

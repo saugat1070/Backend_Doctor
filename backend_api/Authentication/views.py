@@ -10,6 +10,8 @@ from rest_framework.permissions import IsAuthenticated,AllowAny
 from Authentication.serializer import Profile as ProfileSerializer
 import os
 from dotenv import load_dotenv
+
+load_dotenv()
 import requests
 # Create your views here.
 
