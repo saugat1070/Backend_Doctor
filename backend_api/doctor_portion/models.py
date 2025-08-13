@@ -15,4 +15,19 @@ class DoctorModel(models.Model):
     is_available = models.BooleanField(default=True)
     profile_doctor = models.ImageField(upload_to="storage/")
     createdBy = models.ForeignKey(User, on_delete=models.CASCADE, related_name='doctors')
-    
+
+class BookingModel(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    doctor = models.ForeignKey('doctor_portion.DoctorModel', on_delete=models.CASCADE, related_name='bookings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
+    booking_date = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'booking_date'], name='unique_booking_per_user_per_datetime')
+        ]
+        ordering = ['-booking_date']
+
+    def __str__(self):
+        return f"Booking({self.id}) by {self.user_id} with {self.doctor_id} at {self.booking_date}"

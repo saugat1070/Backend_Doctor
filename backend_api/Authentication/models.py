@@ -48,6 +48,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False) 
+    otp = models.CharField(max_length=6, blank=True, null=True)
     objects = UserManager()
 
     USERNAME_FIELD = "email"
@@ -63,4 +64,4 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_username(self):
         username = f'{self.first_name[:4]}{random.randint(1,9)}'.lower()
-        return username    
+        return username
